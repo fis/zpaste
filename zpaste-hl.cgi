@@ -6,7 +6,7 @@ use warnings;
 # settings
 
 use constant DATADIR => '/space/www/data/zpaste';
-use constant BASEURL => 'http://p.zem.fi/';
+use constant BASEURL => 'http://p.example.com/';
 
 use constant HL_LANGS => '/usr/share/highlight/langDefs';
 use constant HL_THEMES => '/usr/share/highlight/themes';

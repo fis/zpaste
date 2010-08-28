@@ -9,7 +9,7 @@ use constant KEY => 'zi8ahkoobahko,xaefeetuphei6eaCee';
 use constant DATADIR => '/space/www/data/zpaste';
 use constant METADIR => '/space/www/data/zpaste/.web';
 use constant METASUFFIX => '.meta';
-use constant BASEURL => 'http://p.zem.fi/';
+use constant BASEURL => 'http://p.example.com/';
 
 # documentation
 

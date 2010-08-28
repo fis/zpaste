@@ -6,7 +6,7 @@ use warnings;
 # settings
 
 use constant KEY => 'zi8ahkoobahko,xaefeetuphei6eaCee';
-use constant SCRIPT => 'https://zem.fi/zpaste.cgi';
+use constant SCRIPT => 'https://example.com/zpaste.cgi';
 
 =head1 NAME
 
