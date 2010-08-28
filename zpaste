@@ -1,0 +1,109 @@
+#! /usr/bin/env perl
+
+use strict;
+use warnings;
+
+# settings
+
+use constant KEY => 'zi8ahkoobahko,xaefeetuphei6eaCee';
+use constant SCRIPT => 'https://zem.fi/zpaste.cgi';
+
+=head1 NAME
+
+zpaste - zpaste client for sending paste requests
+
+=head1 SYNOPSIS
+
+  ... | zpaste [opts] [name]
+  zpaste --link http://www.example.com/ [name]
+
+=head1 DESCRIPTION
+
+This scripts sends a paste request to the server-side CGI script
+(B<zpaste.cgi>).  Contents of the paste are read from standard input.
+A link to the resulting paste is provided to standard output.
+
+The optional name for the paste is provided as a regular command-line
+argument.  The following command-line options are recognized:
+
+=over 4
+
+=item B<--link> I<URL>
+
+Instead of pasting the standard input contents, make a redirection
+entry to the URL provided as an argument to the --link option.  In
+this case, nothing is read from the standard input.
+
+=item B<--force>
+
+If specified, existing pastes (or links) are overwritten.  If not, a
+duplicate name is an error.  Note that if you do not specify a name,
+this flag does nothing, as the randomly selected name is always chosen
+not to conflict with any existing entries.
+
+=item B<--del>
+
+Instead of adding a new paste, only delete an existing one.  In this
+case, too, nothing is read from stdin.  The I<name> argument is not
+optional if this flag is specified.
+
+=back
+
+=cut
+
+use Getopt::Long;
+use HTTP::Request::Common;
+use LWP;
+
+# construct the user agent machinery
+
+my $ua = LWP::UserAgent->new;
+$ua->agent('zpaste/0.1');
+
+# parse command line arguments
+
+my %o = ();
+GetOptions(\%o, 'del', 'force', 'link=s', 'type=s')
+    or exit 1;
+
+die "usage: $0 [opts] [name]\n" if @ARGV > 1;
+my $name = shift @ARGV;
+
+die "paste name not given; mandatory for --del\n"
+    if $o{'del'} and not $name;
+
+# construct the request fields
+
+my @rdata = ('key' => KEY);
+
+push @rdata, 'name' => $name if $name;
+
+push @rdata, 'del' => 1 if $o{'del'};
+push @rdata, 'force' => 1 if $o{'force'};
+push @rdata, 'link' => 1 if $o{'link'};
+
+push @rdata, 'type' => $o{'type'} if $o{'type'};
+
+# prepare the actual request data
+
+if ($o{'link'})
+{
+    push @rdata, 'data' => $o{'link'};
+}
+elsif (not $o{'del'})
+{
+    my $content = '';
+    my $buf;
+    $content .= $buf while read(STDIN, $buf, 65536) > 0;
+    push @rdata, 'data' => [ undef, 'stdin', 'Content' => $content ];
+}
+
+# post the request, report the reply
+
+my $req = POST SCRIPT, 'Content_Type' => 'form-data',
+    'Content' => \@rdata;
+
+my $res = $ua->request($req);
+
+die "error: ".$res->status_line."\n" unless $res->is_success;
+print $res->content;
