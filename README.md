@@ -11,6 +11,27 @@ Main selling points:
 * Does the job of both pastebin and tinyurl.
 * Allow meaningful names as well as update/delete of past pastes.
 
+Usage
+=====
+
+    ... | zpaste [name]
+    zpaste --link http://example.com/ [name]
+
+The first command above pastes the contents of standard input.  A link
+to the generated paste is written to standard output.  The optional
+argument *name* gives the name (alphanumerics, underscore and dash
+only); if not provided, a random name is used.
+
+The second form makes a tinyurl-style address redirection entry to the
+provided URL.
+
+Command line options accepted by the command:
+
+* **--force**: If specified, existing pastes/links are overwritten;
+  otherwise, a duplicate name is an error.
+* **--del**: Instead of adding a new paste, delete an existing one.
+  The *name* argument is required in this case.
+
 Installation
 ============
 
@@ -64,7 +85,7 @@ the world using the address *SCRIPTURL*; by default,
 Finally, you will need to put the web server's document root
 somewhere; let's call this directory *WEBDIR*.  The default value here
 is `/space/www/zpaste`.  Make this directory accessible as *WEBURL*;
-by default, `http://p.example.org/`.
+by default, `http://p.example.com/`.
 
 ### Step 2: edit the configuration sections of the scripts
 
