@@ -172,3 +172,139 @@ substitute the correct paths to places marked {{LIKE THIS}}.
         ErrorLog /whatever/error.log
         LogLevel warn
     </VirtualHost>
+
+Scripts
+=======
+
+This section is automatically generated from the script docs.
+
+zpaste
+------
+
+### NAME
+
+zpaste - zpaste client for sending paste requests
+
+### SYNOPSIS
+
+    ... | zpaste [opts] [name]
+    zpaste --link http://www.example.com/ [name]
+
+### DESCRIPTION
+
+This scripts sends a paste request to the server-side CGI script
+(**zpaste.cgi**).  Contents of the paste are read from standard input.
+A link to the resulting paste is provided to standard output.
+
+The optional name for the paste is provided as a regular command-line
+argument.  The following command-line options are recognized:
+
+* **--link** *URL*
+
+> Instead of pasting the standard input contents, make a redirection
+> entry to the URL provided as an argument to the --link option.  In
+> this case, nothing is read from the standard input.
+
+* **--force**
+
+> If specified, existing pastes (or links) are overwritten.  If not, a
+> duplicate name is an error.  Note that if you do not specify a name,
+> this flag does nothing, as the randomly selected name is always chosen
+> not to conflict with any existing entries.
+
+* **--del**
+
+> Instead of adding a new paste, only delete an existing one.  In this
+> case, too, nothing is read from stdin.  The *name* argument is not
+> optional if this flag is specified.
+
+zpaste.cgi
+----------
+
+### NAME
+
+zpaste.cgi - zpaste script for accepting paste requests
+
+### SYNOPSIS
+
+    https://www.example.com/zpaste.cgi (POST)
+
+### DESCRIPTION
+
+This scripts accepts a paste request from the command-line client
+(**zpaste**).  The "form" submitted by **zpaste** has the following
+fields:
+
+* *key* (required)
+
+> The pre-shared authentication key: an arbitrary string.  Just make
+> sure the `KEY` constants in both this script and the **zpaste** client
+> match.
+
+* *data* (required, unless *del* is set)
+
+> Contents of the paste.  In most cases, this should (and has to) be a
+> file attachment field, the contents of which will be directly written
+> as the contents of the paste.  The single exception is if *link* is
+> set: in that case, this field needs to be a regular plain old text
+> field, containing the URL to redirect to.
+
+* *name* (optional, unless *del* is set)
+
+> Name of the paste.  If not specified, a random name will be generated.
+
+* *link* (optional, boolean)
+
+> If set, the paste is instead a link to redirect to.
+
+* *force* (optional, boolean)
+
+> If set, a paste with the same name than an existing one overwrites the
+> old one.  If not set, a duplicate name is an error.
+
+* *del* (optional, boolean)
+
+> If set, deletes the named paste instead of adding a new one.
+
+zpaste-hl.cgi
+-------------
+
+### NAME
+
+zpaste-hl.cgi - zpaste script for syntax highlighting
+
+### SYNOPSIS
+
+Visible URL:
+
+    http://p.example.com/x.y[&theme=z&noln=1]
+
+Underlying URL:
+
+    http://p.example.com/zpaste-hl.cgi?name=x&lang=y \
+      [&theme=z&noln=1]
+
+### DESCRIPTION
+
+This script is used to provide syntax highlighting for pastes.  The
+script expects to be called via Apache rewriting module (as seen in
+the **SYNOPSIS** section), and the URLs generated when user switches
+languages or themes are written under this assumption.
+
+The arguments accepted this script are the following:
+
+* *name* (required)
+
+> Name of the paste to syntax-highlight.
+
+* *lang* (required)
+
+> Language used for syntax-highlighting.
+
+* *theme* (optional)
+
+> Color theme.
+
+* *noln* (optional)
+
+> If set, omits the line numbers.
